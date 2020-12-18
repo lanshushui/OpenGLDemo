@@ -41,6 +41,7 @@ class MySurfaceViewRender :GLSurfaceView.Renderer {
          *   float top,          //相对观察点近面的上边距
          *   float near,         //相对观察点近面距离
          *   float far)          //相对观察点远面距离
+         *   <link>  R.drawable.frustumM.jpg
          */
         Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1f, 1f, 3f, 7f)
     }
@@ -51,11 +52,14 @@ class MySurfaceViewRender :GLSurfaceView.Renderer {
         //清除深度缓冲与颜色缓冲
         GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT or GLES20.GL_COLOR_BUFFER_BIT)
 
+        //右手坐标系  x向右，y向上，z轴面向我们
         //  //接收相机变换矩阵
         Matrix.setLookAtM(viewMatrix, 0, //变换矩阵的起始位置（偏移量）
             0f, 0f, -3f, //相机位置
             0f, 0f, 0f, //观察点位置
             0f, 1.0f, 0.0f) //up向量在xyz上的分量
+          // （摄影机相当于人眼，upx,upy,upz相当于头的方向，当upy=1时，人眼才是朝向z轴）
+          //https://www.jianshu.com/p/21315a4b39b4
 
         /**
          *  Matrix.multiplyMM (float[] result, //接收相乘结果
