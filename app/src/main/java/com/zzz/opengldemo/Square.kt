@@ -14,7 +14,7 @@ import java.nio.ShortBuffer
 
 // number of coordinates per vertex in this array
 
-class Square {
+class Square :Figure() {
     //每个顶点的坐标数
     val COORDS_PER_VERTEX = 3
     var squareCoords = floatArrayOf(
@@ -52,41 +52,7 @@ class Square {
             }
         }
 
-
-    private val vertexShaderCode =
-        "attribute vec4 vPosition;" +
-                "void main() {" +
-                "  gl_Position = vPosition;" +
-                "}"
-
-    private val fragmentShaderCode =
-        "precision mediump float;" +
-                "uniform vec4 vColor;" +
-                "void main() {" +
-                "  gl_FragColor = vColor;" +
-                "}"
-    private var mProgram: Int
-    private var positionHandle: Int = 0
-    private var mColorHandle: Int = 0
-
-    init {
-        val vertexShader: Int = loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode)
-        val fragmentShader: Int = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode)
-
-        // create empty OpenGL ES Program
-        mProgram = GLES20.glCreateProgram().also {
-
-            // add the vertex shader to program
-            GLES20.glAttachShader(it, vertexShader)
-
-            // add the fragment shader to program
-            GLES20.glAttachShader(it, fragmentShader)
-
-            // creates OpenGL ES program executables
-            GLES20.glLinkProgram(it)
-        }
-    }
-    fun draw() {
+    override fun draw() {
         //将程序添加到OpenGL ES环境
         GLES20.glUseProgram(mProgram)
 
@@ -119,17 +85,6 @@ class Square {
 
             // 禁用顶点数组
             GLES20.glDisableVertexAttribArray(it)
-        }
-    }
-    fun loadShader(type: Int, shaderCode: String): Int {
-
-        // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
-        // or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)
-        return GLES20.glCreateShader(type).also { shader ->
-
-            // add the source code to the shader and compile it
-            GLES20.glShaderSource(shader, shaderCode)
-            GLES20.glCompileShader(shader)
         }
     }
 }

@@ -71,7 +71,8 @@ class MySurfaceViewRender :GLSurfaceView.Renderer {
          */
         Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
 
-        //mTriangle.draw(vPMatrix)
-        mSquare.draw()
+        mTriangle.initMvpMatrix(vPMatrix)
+        mTriangle.draw()
+        //mSquare.draw()
     }
 }

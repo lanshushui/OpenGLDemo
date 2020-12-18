@@ -11,10 +11,11 @@ import java.nio.FloatBuffer
  *  email: chentao3@yy.com
  */
 
-class Triangle {
+class Triangle : Figure() {
 
     //每个顶点的坐标数
     val COORDS_PER_VERTEX = 3
+    var mvpMatrix: FloatArray? = null
 
     /**
      * 请注意，此形状的坐标是按照逆时针顺序定义的。绘制顺序非常重要
@@ -44,54 +45,21 @@ class Triangle {
             }
         }
 
-    private val vertexShaderCode =
-        "uniform mat4 uMVPMatrix;" +
-                "attribute vec4 vPosition;" +
-                "void main() {" +
-
-                "  gl_Position = uMVPMatrix * vPosition;" +
-                "}"
-
-    private val fragmentShaderCode =
-        "precision mediump float;" +
-                "uniform vec4 vColor;" +
-                "void main() {" +
-                "  gl_FragColor = vColor;" +
-                "}"
-
-    private var mProgram: Int
-    private var positionHandle: Int = 0
-    private var mColorHandle: Int = 0
     private var vPMatrixHandle: Int = 0
 
     private val vertexCount: Int = triangleCoords.size / COORDS_PER_VERTEX //顶点数
     private val vertexStride: Int = COORDS_PER_VERTEX * 4 // 每个顶点占用的字节
 
-    init {
-        val vertexShader: Int = loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode)
-        val fragmentShader: Int = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode)
 
-        // create empty OpenGL ES Program
-        mProgram = GLES20.glCreateProgram().also {
-
-            // add the vertex shader to program
-            GLES20.glAttachShader(it, vertexShader)
-
-            // add the fragment shader to program
-            GLES20.glAttachShader(it, fragmentShader)
-
-            // creates OpenGL ES program executables
-            GLES20.glLinkProgram(it)
-        }
-    }
-
-    fun draw(mvpMatrix: FloatArray) {
+    override fun draw() {
         //将程序添加到OpenGL ES环境
         GLES20.glUseProgram(mProgram)
 
-        vPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix")
-        //传入矩阵
-        GLES20.glUniformMatrix4fv(vPMatrixHandle, 1, false, mvpMatrix, 0)
+        mvpMatrix?.let {
+            vPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix")
+            //传入矩阵
+            GLES20.glUniformMatrix4fv(vPMatrixHandle, 1, false, it, 0)
+        }
 
         // 获取顶点着色器的vPosition成员的句柄
         positionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition").also {
@@ -124,15 +92,19 @@ class Triangle {
         }
     }
 
-    fun loadShader(type: Int, shaderCode: String): Int {
 
-        // create a vertex shader type (GLES20.GL_VERTEX_SHADER)
-        // or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)
-        return GLES20.glCreateShader(type).also { shader ->
+    override fun getVertexShaderCode(): String {
+        return "uniform mat4 uMVPMatrix;" +
+                "attribute vec4 vPosition;" +
+                "void main() {" +
 
-            // add the source code to the shader and compile it
-            GLES20.glShaderSource(shader, shaderCode)
-            GLES20.glCompileShader(shader)
-        }
+                "  gl_Position = uMVPMatrix * vPosition;" +
+                "}"
     }
+
+    fun initMvpMatrix(mvpMatrix: FloatArray) {
+        this.mvpMatrix=mvpMatrix;
+    }
+
+
 }
