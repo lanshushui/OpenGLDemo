@@ -72,23 +72,23 @@ class Triangle : Figure() {
                 COORDS_PER_VERTEX, //每个顶点的坐标数 3
                 GLES20.GL_FLOAT,  //float类型
                 false,
-                COORDS_PER_VERTEX*4, // 每个顶点占用的字节
+                COORDS_PER_VERTEX * 4, // 每个顶点占用的字节
                 vertexBuffer
             )
-
-            // 获取片段着色器的vColor成员的句柄
-            mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor").also { colorHandle ->
-
-                // 设置绘制三角形的颜色
-                GLES20.glUniform4fv(colorHandle, 1, color, 0)
-            }
-
-            // 画三角形
-            GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount)
-
-            // 禁用顶点数组
-            GLES20.glDisableVertexAttribArray(it)
         }
+        // 获取片段着色器的vColor成员的句柄
+        mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor").also { colorHandle ->
+
+            // 设置绘制三角形的颜色
+            GLES20.glUniform4fv(colorHandle, 1, color, 0)
+        }
+
+        // 画三角形
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount)
+
+        // 禁用顶点数组
+        GLES20.glDisableVertexAttribArray(positionHandle)
+
     }
 
 
@@ -102,7 +102,7 @@ class Triangle : Figure() {
     }
 
     fun initMvpMatrix(mvpMatrix: FloatArray) {
-        this.mvpMatrix=mvpMatrix;
+        this.mvpMatrix = mvpMatrix;
     }
 
 
