@@ -11,7 +11,7 @@ import java.nio.FloatBuffer
  *  email: chentao3@yy.com
  */
 
-class Triangle{
+class Triangle {
 
     //每个顶点的坐标数
     val COORDS_PER_VERTEX = 3
@@ -26,6 +26,7 @@ class Triangle{
         -0.5f, -0.311004243f, 0.0f,    // bottom left
         0.5f, -0.311004243f, 0.0f      // bottom right
     )
+
     // 红，绿，蓝，透明度
     val color = floatArrayOf(0.63671875f, 0.76953125f, 0.22265625f, 1.0f)
     private var vertexBuffer: FloatBuffer =
@@ -44,9 +45,11 @@ class Triangle{
         }
 
     private val vertexShaderCode =
-        "attribute vec4 vPosition;" +
+        "uniform mat4 uMVPMatrix;" +
+                "attribute vec4 vPosition;" +
                 "void main() {" +
-                "  gl_Position = vPosition;" +
+
+                "  gl_Position = uMVPMatrix * vPosition;" +
                 "}"
 
     private val fragmentShaderCode =
@@ -59,9 +62,11 @@ class Triangle{
     private var mProgram: Int
     private var positionHandle: Int = 0
     private var mColorHandle: Int = 0
+    private var vPMatrixHandle: Int = 0
 
     private val vertexCount: Int = triangleCoords.size / COORDS_PER_VERTEX //顶点数
     private val vertexStride: Int = COORDS_PER_VERTEX * 4 // 所有顶点占用的字节
+
     init {
         val vertexShader: Int = loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode)
         val fragmentShader: Int = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode)
@@ -80,9 +85,13 @@ class Triangle{
         }
     }
 
-    fun draw() {
+    fun draw(mvpMatrix: FloatArray) {
         //将程序添加到OpenGL ES环境
         GLES20.glUseProgram(mProgram)
+
+        vPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix")
+        //传入矩阵
+        GLES20.glUniformMatrix4fv(vPMatrixHandle, 1, false, mvpMatrix, 0)
 
         // 获取顶点着色器的vPosition成员的句柄
         positionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition").also {
