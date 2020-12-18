@@ -65,7 +65,7 @@ class Triangle {
     private var vPMatrixHandle: Int = 0
 
     private val vertexCount: Int = triangleCoords.size / COORDS_PER_VERTEX //顶点数
-    private val vertexStride: Int = COORDS_PER_VERTEX * 4 // 所有顶点占用的字节
+    private val vertexStride: Int = COORDS_PER_VERTEX * 4 // 每个顶点占用的字节
 
     init {
         val vertexShader: Int = loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode)

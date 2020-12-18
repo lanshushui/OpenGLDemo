@@ -41,7 +41,7 @@ class MySurfaceViewRender :GLSurfaceView.Renderer {
          *   float top,          //相对观察点近面的上边距
          *   float near,         //相对观察点近面距离
          *   float far)          //相对观察点远面距离
-         *   <link>  R.drawable.frustumM.jpg
+         *   <link>  R.drawable.frustumm.jpg
          */
         Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1f, 1f, 3f, 7f)
     }
@@ -71,6 +71,7 @@ class MySurfaceViewRender :GLSurfaceView.Renderer {
          */
         Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
 
-        mTriangle.draw(vPMatrix)
+        //mTriangle.draw(vPMatrix)
+        mSquare.draw()
     }
 }
