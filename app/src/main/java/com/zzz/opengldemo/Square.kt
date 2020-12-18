@@ -80,7 +80,7 @@ class Square : Figure() {
             GLES20.glUniform4fv(colorHandle, 1, color, 0)
         }
 
-        // 画正方形
+        // 画正方形  索引绘制法
         GLES20.glDrawElements(
             GLES20.GL_TRIANGLES,
             drawOrder.size,

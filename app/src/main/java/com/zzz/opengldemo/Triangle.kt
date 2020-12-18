@@ -83,7 +83,16 @@ class Triangle : Figure() {
             GLES20.glUniform4fv(colorHandle, 1, color, 0)
         }
 
-        // 画三角形
+        // 画三角形 顶点绘制法
+        /**
+         * GL_POINTS	将传入的顶点坐标作为单独的点绘制
+         * GL_LINES	将传入的坐标作为单独线条绘制，ABCDEFG六个顶点，绘制AB、CD、EF三条线
+         * GL_LINE_STRIP	将传入的顶点作为折线绘制，ABCD四个顶点，绘制AB、BC、CD三条线
+         * GL_LINE_LOOP	将传入的顶点作为闭合折线绘制，ABCD四个顶点，绘制AB、BC、CD、DA四条线。
+         * GL_TRIANGLES	将传入的顶点作为单独的三角形绘制，ABCDEF绘制ABC,DEF两个三角形
+         * GL_TRIANGLE_STRIP	将传入的顶点作为三角条带绘制，ABCDEF绘制ABC,BCD,CDE,DEF四个三角形
+         * GL_TRIANGLE_FAN	将传入的顶点作为扇面绘制，ABCDEF绘制ABC、ACD、ADE、AEF四个三角形
+         */
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount)
 
         // 禁用顶点数组
