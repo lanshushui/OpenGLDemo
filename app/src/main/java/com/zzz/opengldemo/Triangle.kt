@@ -48,7 +48,6 @@ class Triangle : Figure() {
     private var vPMatrixHandle: Int = 0
 
     private val vertexCount: Int = triangleCoords.size / COORDS_PER_VERTEX //顶点数
-    private val vertexStride: Int = COORDS_PER_VERTEX * 4 // 每个顶点占用的字节
 
 
     override fun draw() {
@@ -73,7 +72,7 @@ class Triangle : Figure() {
                 COORDS_PER_VERTEX, //每个顶点的坐标数 3
                 GLES20.GL_FLOAT,  //float类型
                 false,
-                vertexStride, // 所有顶点占用的字节
+                COORDS_PER_VERTEX*4, // 每个顶点占用的字节
                 vertexBuffer
             )
 
