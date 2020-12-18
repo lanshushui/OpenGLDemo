@@ -1,5 +1,6 @@
 package com.zzz.opengldemo
 
+import android.opengl.GLSurfaceView
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 
