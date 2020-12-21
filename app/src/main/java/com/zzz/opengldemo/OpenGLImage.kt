@@ -1,9 +1,7 @@
 package com.zzz.opengldemo
 
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.opengl.GLES20
-import android.opengl.GLUtils
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -179,7 +177,22 @@ class OpenGLImage : Figure() {
             GLES20.GL_TEXTURE_WRAP_T,
             GLES20.GL_REPEAT.toFloat()
         )
-        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, img, 0)
+
+        val pixels = ByteBuffer.allocateDirect(img.getByteCount())
+        pixels.order(ByteOrder.nativeOrder())
+        img.copyPixelsToBuffer(pixels)
+        pixels.position(0)
+        GLES20.glTexImage2D(
+            GLES20.GL_TEXTURE_2D,
+            0,
+            GLES20.GL_RGBA,
+            img.getWidth(),
+            img.getHeight(),
+            0,
+            GLES20.GL_RGBA,
+            GLES20.GL_UNSIGNED_BYTE,
+            pixels
+        )
         img.recycle()
 
     }
