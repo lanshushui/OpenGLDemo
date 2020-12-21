@@ -16,6 +16,7 @@ class Triangle : Figure() {
     //每个顶点的坐标数
     val COORDS_PER_VERTEX = 3
     var mvpMatrix: FloatArray? = null
+    var lastChange: Long = 0;
 
     /**
      * 请注意，此形状的坐标是按照逆时针顺序定义的。绘制顺序非常重要
@@ -29,7 +30,7 @@ class Triangle : Figure() {
     )
 
     // 红，绿，蓝，透明度
-    val color = floatArrayOf(0.63671875f, 0.76953125f, 0.22265625f, 1.0f)
+    var color = floatArrayOf(1f, 1f, 1f, 1f)
     private var vertexBuffer: FloatBuffer =
         // 初始化ByteBuffer，长度为数组的长度*4，因为一个float占4个字节
         ByteBuffer.allocateDirect(triangleCoords.size * 4).run {
@@ -49,19 +50,23 @@ class Triangle : Figure() {
 
     private val vertexCount: Int = triangleCoords.size / COORDS_PER_VERTEX //顶点数
 
+    init {
+        //mProgram创建后便可以获得下面变量 不需要调用 GLES20.glUseProgram(mProgram)才获得变量
+        // GLES20.glUseProgram(mProgram) 每次绘画都要调用
+        vPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix")
+        positionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition")
+        mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor")
+    }
 
     override fun draw() {
         //将程序添加到OpenGL ES环境
         GLES20.glUseProgram(mProgram)
-
         mvpMatrix?.let {
-            vPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix")
             //传入矩阵
             GLES20.glUniformMatrix4fv(vPMatrixHandle, 1, false, it, 0)
         }
 
-        // 获取顶点着色器的vPosition成员的句柄
-        positionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition").also {
+        positionHandle.let {
 
             // 启用三角形顶点的手柄
             GLES20.glEnableVertexAttribArray(it)
@@ -76,11 +81,17 @@ class Triangle : Figure() {
                 vertexBuffer
             )
         }
-        // 获取片段着色器的vColor成员的句柄
-        mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor").also { colorHandle ->
 
+        mColorHandle.let {
+            if (System.currentTimeMillis() - lastChange > 1000) {
+                var red: Float = (0..100).random() / 100f
+                var blue: Float = (0..100).random() / 100f
+                var green: Float = (0..100).random() / 100f
+                color = floatArrayOf(red, blue, green, 1.0f)
+                lastChange = System.currentTimeMillis()
+            }
             // 设置绘制三角形的颜色
-            GLES20.glUniform4fv(colorHandle, 1, color, 0)
+            GLES20.glUniform4fv(it, 1, color, 0)
         }
 
         // 画三角形 顶点绘制法

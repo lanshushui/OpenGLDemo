@@ -52,13 +52,16 @@ class Square : Figure() {
             }
         }
 
+    init {
+        positionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition")
+        mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor")
+    }
+
     override fun draw() {
         //将程序添加到OpenGL ES环境
         GLES20.glUseProgram(mProgram)
 
-
-        // 获取顶点着色器的vPosition成员的句柄
-        positionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition").also {
+        positionHandle.let {
 
             // 启用三角形顶点的手柄
             GLES20.glEnableVertexAttribArray(it)
@@ -73,8 +76,8 @@ class Square : Figure() {
                 vertexBuffer
             )
         }
-        // 获取片段着色器的vColor成员的句柄
-        mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor").also { colorHandle ->
+
+        mColorHandle.let { colorHandle ->
 
             // 设置绘制三角形的颜色
             GLES20.glUniform4fv(colorHandle, 1, color, 0)

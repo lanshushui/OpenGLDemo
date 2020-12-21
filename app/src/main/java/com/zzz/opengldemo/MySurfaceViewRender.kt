@@ -14,7 +14,7 @@ import javax.microedition.khronos.opengles.GL10
 class MySurfaceViewRender :GLSurfaceView.Renderer {
     private lateinit var mTriangle: Triangle
     private lateinit var mSquare: Square
-
+    private lateinit var openGLImage: OpenGLImage
     private val vPMatrix = FloatArray(16)
     private val projectionMatrix = FloatArray(16)
     private val viewMatrix = FloatArray(16)
@@ -24,6 +24,8 @@ class MySurfaceViewRender :GLSurfaceView.Renderer {
         mTriangle = Triangle()
         // initialize a square
         mSquare = Square()
+
+        openGLImage= OpenGLImage()
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
@@ -71,8 +73,10 @@ class MySurfaceViewRender :GLSurfaceView.Renderer {
          */
         Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
 
-        mTriangle.initMvpMatrix(vPMatrix)
-        mTriangle.draw()
+       // mTriangle.initMvpMatrix(vPMatrix)
+        //mTriangle.draw()
         //mSquare.draw()
+        openGLImage.initMvpMatrix(vPMatrix)
+        openGLImage.draw()
     }
 }
