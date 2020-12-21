@@ -117,22 +117,9 @@ class OpenGLImage : Figure() {
             )
         }
 
-        /**
-         * 1.代码中获取到shader中改sampler的句柄
-         * 2.设置纹理单元与shader中sampler的关系 GLES20.glUniform1i
-         * 3.绑定目标纹理  GLES20.glActiveTexture   GLES20.glBindTexture
-         */
-        vTextureHandle.let {
-
-           // GLES20.glUniform1i(it, 0);  //绑定到0号纹理单位
-
-            //GLES20.glActiveTexture(GLES20.GL_TEXTURE0);  //激活0号纹理单位
-            //默认情况下，调用函数glBindTexture(GL_TEXTURE_2D, textureID);会默认将当前纹理关联至GL_TEXTURE0
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, loadTexture()); // 将纹理ID绑定到当前活动的纹理单元上
-
-
+        if (mTextureId == -1) {
+            loadTexture()
         }
-
         // 绘制顶点 ，方式有顶点法和索引法
         GLES20.glDrawArrays(
             GLES20.GL_TRIANGLE_STRIP,
@@ -149,14 +136,26 @@ class OpenGLImage : Figure() {
         this.mvpMatrix = mvpMatrix;
     }
 
-    fun loadTexture(): Int {
-        if (mTextureId != -1) return mTextureId
+    /**
+     * 1.代码中获取到shader中改sampler的句柄
+     * 2.设置纹理单元与shader中sampler的关系 GLES20.glUniform1i
+     * 3.绑定目标纹理  GLES20.glActiveTexture   GLES20.glBindTexture
+     */
+    fun loadTexture() {
         val img =
             BitmapFactory.decodeResource(LocalApplication.context.resources, R.drawable.frustumm)
         val textures = intArrayOf(-1)
 
         GLES20.glGenTextures(1, textures, 0)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0])
+        mTextureId = textures[0]
+
+        GLES20.glUniform1i(vTextureHandle, 0);  //绑定到0号纹理单位
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);  //激活0号纹理单位
+        //默认情况下，调用函数glBindTexture(GL_TEXTURE_2D, textureID);会默认将当前纹理关联至GL_TEXTURE0
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureId)// 将纹理ID绑定到当前活动的纹理单元上
+
+        //纹理过滤参数，指定当我们渲染出来的纹理比原来的纹理小或者大时要如何处理
+        // 这里我们使用了GL_LINEAR的方式，这是一种线性插值的方式，得到的结果会更平滑
         GLES20.glTexParameterf(
             GLES20.GL_TEXTURE_2D,
             GLES20.GL_TEXTURE_MAG_FILTER,
@@ -182,8 +181,7 @@ class OpenGLImage : Figure() {
         )
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, img, 0)
         img.recycle()
-        mTextureId = textures[0]
-        return mTextureId
+
     }
 
     override fun getVertexShaderCode(): String {
@@ -199,16 +197,16 @@ class OpenGLImage : Figure() {
 
     /**
      * 顶点着色器中默认精度：
-        precision highp float;
-        precision highp int;
-        precision lowp sampler2D;
-        precision lowp samplerCube;
+    precision highp float;
+    precision highp int;
+    precision lowp sampler2D;
+    precision lowp samplerCube;
 
-        像素着色器中默认精度
-        precision mediump int;
-        precision lowp sampler2D;
-        precision lowp samplerCube;
-        float 没有默认精度
+    像素着色器中默认精度
+    precision mediump int;
+    precision lowp sampler2D;
+    precision lowp samplerCube;
+    float 没有默认精度
      */
     override fun getFragmentShaderCode(): String {
         return "precision mediump float;" +
