@@ -61,9 +61,11 @@ class MySurfaceViewRender :GLSurfaceView.Renderer {
         //正交投影(无论物体距离相机多远，投影后的物体大小尺寸不变)
         if(width>height){
             val ratio: Float = width.toFloat() / height.toFloat()
+            //将[ -ratio, ratio]投射到[-1,1]  ratio>1 投射的图形左右会缩小
             Matrix.orthoM(projectionMatrix, 0, -ratio, ratio, -1f, 1f, 3f, 7f)
         }else{
             val ratio: Float = height.toFloat() / width.toFloat()
+            //将[ -ratio, ratio]投射到[-1,1]  ratio>1 投射的图形上下会缩小
             Matrix.orthoM(projectionMatrix, 0, -1f, 1f, -ratio, ratio, 3f, 7f)
         }
 
@@ -101,3 +103,24 @@ class MySurfaceViewRender :GLSurfaceView.Renderer {
         openGLImage.draw()
     }
 }
+/*
+	/**
+	 * 获取物体的总变换矩阵
+	 *
+	 * @param spec
+	 * @return
+	 */
+	public static float[] getFinalMatrix(float[] spec) {
+		mMVPMatrix = new float[16];
+		/*
+		 *  矩阵乘法计算, 将两个矩阵相乘, 并存入到第三个矩阵中
+		 *  六个参数 :
+		 *  ①② 参数 : 结果矩阵, 结果矩阵起始位移
+		 *  ③④ 参数 : 左矩阵, 结果矩阵起始位移
+		 *  ⑤⑥ 参数 : 右矩阵, 结果矩阵起始位移
+		 */
+		Matrix.multiplyMM(mMVPMatrix, 0, mVMatrix, 0, spec, 0);
+		Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVPMatrix, 0);
+		return mMVPMatrix;
+	}
+ */
